@@ -59,6 +59,12 @@ else:
 for device in list_2_devices:
     list_view_2.insert(tk.END, device)
 list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+list_view_1_items = list(list_view_1.get(0, tk.END))
+for item in list_view_2.get(0, tk.END):
+    print("Item: " + item)
+    if item.strip() in list_view_1_items:
+        print("Item exists in both lists: " + item)
+        list_view_1.delete(list_view_1_items.index(item.strip()))
 
 # Create the label for the current hotkey
 hotkey_label = tk.Label(window, text="Current Hotkey: ")
