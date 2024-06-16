@@ -26,7 +26,9 @@ hotkey_label = tk.Label(window, text="Current Hotkey: ")
 hotkey_label.pack()
 
 # Create the button to show the current hotkey
-hotkey_button = tk.Button(window, text="Show Hotkey", command=open_hotkey_window)
+# Variable name current_hotkey will get the currenthotkey from a file called hotkey.txt in the current directory
+current_hotkey = "Ctrl + F12"
+hotkey_button = tk.Button(window, text="Show Hotkey", command=get_audio_devices)
 hotkey_button.pack()
 
 # Create the button to add an item from the first list to the second list
