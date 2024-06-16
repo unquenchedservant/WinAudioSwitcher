@@ -32,7 +32,7 @@ def remove_item():
 
 # Create the main window
 window = tk.Tk()
-window.title("Settings")
+window.title("WinAudioSwitcher")
 window.geometry("400x300")
 
 devices = get_audio_devices()
