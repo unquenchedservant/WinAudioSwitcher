@@ -1,4 +1,11 @@
 import tkinter as tk
+from tkinter import *
+from pycaw.pycaw import AudioUtilities
+import os 
+
+def get_audio_devices():
+    devices = AudioUtilities.GetAllDevices()
+    return devices
 
 def open_hotkey_window():
     # Code to open the hotkey window goes here
@@ -13,8 +20,11 @@ window = tk.Tk()
 window.title("Settings")
 window.geometry("400x300")
 
+devices = get_audio_devices()
 # Create the list view for the first list
 list_view_1 = tk.Listbox(window)
+for device in devices:
+    list_view_1.insert(tk.END, device)
 list_view_1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Create the list view for the second list
