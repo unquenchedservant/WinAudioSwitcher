@@ -8,7 +8,6 @@ def get_audio_devices():
     return devices
 
 def open_hotkey_window():
-    # Code to open the hotkey window goes here
     pass
 
 def add_item():
