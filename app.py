@@ -8,6 +8,7 @@ alt_pressed = False
 shift_pressed = False
 super_pressed = False
 num_modifiers = 0
+num_keys = 0
 hotkey_text = ""
 
 #TODO: Add a way to save the hotkey to a file (low priority)
@@ -20,6 +21,7 @@ def key_pressed(event):
     global super_pressed
     global hotkey_text
     global num_modifiers
+    global num_keys
     if event.keysym == "Control_L":
         if not "Ctrl" in hotkey_text and not num_modifiers == 2:
             ctrl_pressed = True
@@ -57,7 +59,8 @@ def key_pressed(event):
                 hotkey_text = hotkey_text + "Super"
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
     else:
-        if not event.keysym in hotkey_text:
+        if not event.keysym in hotkey_text and not num_keys == 1:
+            num_keys += 1
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + event.keysym
             else:
@@ -70,6 +73,8 @@ def key_released(event):
     global shift_pressed
     global super_pressed
     global hotkey_text
+    global num_modifiers
+    global num_keys
     if event.keysym == "Escape":
         hotkey_text = ""
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
@@ -77,6 +82,8 @@ def key_released(event):
         ctrl_pressed = False
         shift_pressed = False
         super_pressed = False
+        num_modifiers = 0
+        num_keys = 0
 
 def get_audio_devices():
     devices = AudioUtilities.GetAllDevices()
