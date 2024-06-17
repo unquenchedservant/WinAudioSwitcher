@@ -3,12 +3,17 @@ from tkinter import *
 from pycaw.pycaw import AudioUtilities
 import os 
 
+def key_pressed(event):
+def key_released(event):
 def get_audio_devices():
     devices = AudioUtilities.GetAllDevices()
     return devices
 
 def open_hotkey_window():
-    pass
+    if hotkey_win.state() == "withdrawn":
+        hotkey_win.deiconify()
+    else:
+        hotkey_win.withdraw()
 
 def add_item():
     selected = list_view_1.curselection()
@@ -60,6 +65,7 @@ for device in list_2_devices:
     list_view_2.insert(tk.END, device)
 list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 list_view_1_items = list(list_view_1.get(0, tk.END))
+
 print(list_2_devices)
 deletion_count = 0
 for item in list_view_2.get(0, tk.END):
@@ -90,7 +96,17 @@ remove_button.pack()
 hotkey_win = Toplevel(window)
 hotkey_win.title("Set Hotkey")
 hotkey_win.geometry("200x100")
-current_pressed = ""
+hotkey_win.bind("<Key>", key_pressed)
+hotkey_win.bind("<KeyRelease>", key_released)
+
+current_pressed = "Ctrl + F12"
+hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_pressed)
+hotkey_label.pack()
+window.update_idletasks()
+x = (hotkey_win.winfo_screenwidth() - hotkey_win.winfo_reqwidth()) / 2
+y = (hotkey_win.winfo_screenheight() - hotkey_win.winfo_reqheight()) / 2
+hotkey_win.geometry("+%d+%d" % (x, y))
+
 hotkey_win.withdraw()
 # Start the main loop
 window.mainloop()
