@@ -11,9 +11,6 @@ num_modifiers = 0
 num_keys = 0
 hotkey_text = ""
 
-#TODO: Add a way to save the hotkey to a file (low priority)
-#TODO: Make it so that it maxes at 3 keys (2 modifiers and 1 key)
-#TODO: Change it so that 'esc' clears the current hotkey, and 'enter' saves the hotkey
 def key_pressed(event):
     global ctrl_pressed
     global alt_pressed
@@ -22,7 +19,7 @@ def key_pressed(event):
     global hotkey_text
     global num_modifiers
     global num_keys
-    if event.keysym == "Control_L":
+    if event.keysym == "Control_L" or event.keysym == "Control_R":
         if not "Ctrl" in hotkey_text and not num_modifiers == 2:
             ctrl_pressed = True
             num_modifiers += 1
@@ -31,7 +28,7 @@ def key_pressed(event):
             else:
                 hotkey_text = hotkey_text + "Ctrl"
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
-    elif event.keysym == "Alt_L":
+    elif event.keysym == "Alt_L" or event.keysym == "Alt_R":
         if not "Alt" in hotkey_text and not num_modifiers == 2:
             num_modifiers += 1
             alt_pressed = True
@@ -40,7 +37,7 @@ def key_pressed(event):
             else:
                 hotkey_text = hotkey_text + "Alt"
             hotkey_label.config(text="Current Hotkey: " + hotkey_text)
-    elif event.keysym == "Shift_L":
+    elif event.keysym == "Shift_L" or event.keysym == "Shift_R":
         if not "Shift" in hotkey_text and not num_modifiers == 2:
             shift_pressed = True
             num_modifiers += 1
@@ -59,7 +56,22 @@ def key_pressed(event):
                 hotkey_text = hotkey_text + "Super"
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
     else:
-        if not event.keysym in hotkey_text and not num_keys == 1:
+        if event.keysym == "Return":
+            with open("hotkey.txt", "w") as file:
+                file.write(hotkey_text)
+            hotkey_win.withdraw()
+        elif event.keysym == "BackSpace":
+            if num_keys + num_modifiers == 1:
+                hotkey_text = ""
+                hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+            else:
+                hotkey_text = hotkey_text.rsplit(" + ", 1)[0]
+                hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+            if num_keys > 0:
+                num_keys -= 1
+            else:
+                num_modifiers -= 1
+        elif not event.keysym in hotkey_text and not num_keys == 1 and not event.keysym == "Delete" and not event.keysym == "Escape":
             num_keys += 1
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + event.keysym
@@ -75,7 +87,7 @@ def key_released(event):
     global hotkey_text
     global num_modifiers
     global num_keys
-    if event.keysym == "Escape":
+    if event.keysym == "Escape" or event.keysym == "Delete":
         hotkey_text = ""
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
         alt_pressed = False
