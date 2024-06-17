@@ -4,6 +4,7 @@ from pycaw.pycaw import AudioUtilities
 import os 
 
 #TODO: Add tooltips for shortcut window
+#TODO: Update .txt to .json
 
 hotkey_win = None
 ctrl_pressed = False
