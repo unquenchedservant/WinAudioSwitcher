@@ -12,12 +12,12 @@ def open_hotkey_window():
 
 def add_item():
     selected = list_view_1.curselection()
-    print(list_view_1.get(0, tk.END))
     if selected:
-        list_view_2.insert(tk.END, list_view_1.get(selected)) # insert the selected item into the second list
+        nSelected = list_view_1.get(selected)
+        list_view_2.insert(tk.END, nSelected) # insert the selected item into the second list
         list_view_1.delete(selected)
         with open("current_devices.txt", "a") as file:
-            file.write(list_view_1.get(selected) + "\n")
+            file.write(nSelected + "\n")
 
 def remove_item():
     selected = list_view_2.curselection()
@@ -38,7 +38,8 @@ devices = get_audio_devices()
 # Create the list view for the first list
 list_view_1 = tk.Listbox(window)
 for device in devices:
-    list_view_1.insert(tk.END, device)
+    if device.FriendlyName not in list_view_1.get(0, tk.END):
+        list_view_1.insert(tk.END, device.FriendlyName)
 list_view_1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Create the list view for the second list
@@ -59,11 +60,15 @@ for device in list_2_devices:
     list_view_2.insert(tk.END, device)
 list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 list_view_1_items = list(list_view_1.get(0, tk.END))
+print(list_2_devices)
+deletion_count = 0
 for item in list_view_2.get(0, tk.END):
     print("Item: " + item)
-    if item.strip() in list_view_1_items:
-        print("Item exists in both lists: " + item)
-        list_view_1.delete(list_view_1_items.index(item.strip()))
+    for item_1 in list_view_1.get(0, tk.END):
+        if item.strip() == item_1.strip():
+            deletion_count += 1
+            list_view_1.delete(list_view_1_items.index(item_1))
+print("Deletion count: " + str(deletion_count))
 
 # Create the label for the current hotkey
 hotkey_label = tk.Label(window, text="Current Hotkey: ")
