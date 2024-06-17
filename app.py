@@ -3,7 +3,6 @@ from tkinter import *
 from pycaw.pycaw import AudioUtilities
 import os 
 
-#TODO: Add tooltips for shortcut window
 #TODO: Update .txt to .json
 
 hotkey_win = None
@@ -119,12 +118,22 @@ def create_hotkey_window():
     global hotkey_label
     hotkey_win = tk.Toplevel(window)
     hotkey_win.title("Set Hotkey")
-    hotkey_win.geometry("200x100")
+    hotkey_win.geometry("225x100")
     hotkey_win.bind("<Key>", key_pressed)
     hotkey_win.bind("<KeyRelease>", key_released)
 
     hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_hotkey)
     hotkey_label.pack()
+
+    line = tk.Frame(hotkey_win, height=1, bg='gray')
+    line.pack(fill='x', padx=5, pady=5)
+
+    tip1 = tk.Label(hotkey_win, text="Press Backspace to delete the last key")
+    tip2 = tk.Label(hotkey_win, text="Press Escape/Delete to clear the hotkey")
+    tip3 = tk.Label(hotkey_win, text="Press Enter to set the hotkey")
+    tip1.pack()
+    tip2.pack()
+    tip3.pack()
 
     window.update_idletasks()
     x = (hotkey_win.winfo_screenwidth() - hotkey_win.winfo_reqwidth()) / 2
