@@ -146,14 +146,21 @@ def add_item():
                 file.write(f'{nSelected}')
 
 def remove_item():
+    total_lines = 0
+    current_position = 0
+    with open("current_devices.txt", "r") as file:
+        for line in file:
+            total_lines += 1
     selected = list_view_2.curselection()
-    print(selected)
     if selected:
         list_view_1.insert(tk.END, list_view_2.get(selected)) # insert the selected item into the second list
         list_view_2.delete(selected)
         with open("current_devices.txt", "w") as file:
             for device in list_view_2.get(0, tk.END):
-                file.write(device + "\n")
+                if not current_position == total_lines - 1:
+                    file.write(f'{device}\n')
+                else:
+                    file.write(f'{device}')
 
 # Create the main window
 window = tk.Tk()
