@@ -7,6 +7,7 @@ ctrl_pressed = False
 alt_pressed = False
 shift_pressed = False
 super_pressed = False
+num_modifiers = 0
 hotkey_text = ""
 
 #TODO: Add a way to save the hotkey to a file (low priority)
@@ -19,6 +20,7 @@ def key_pressed(event):
     global super_pressed
     global hotkey_text
     if event.keysym == "Control_L":
+        num_modifiers += 1
         ctrl_pressed = True
         if not "Ctrl" in hotkey_text:
             if hotkey_text != "":
