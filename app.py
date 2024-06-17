@@ -177,7 +177,13 @@ hotkey_label.pack()
 
 # Create the button to show the current hotkey
 # Variable name current_hotkey will get the currenthotkey from a file called hotkey.txt in the current directory
-current_hotkey = "Ctrl + F12"
+try:
+    with open("hotkey.txt", "r") as file:
+        current_hotkey = file.read()
+except FileNotFoundError:
+    current_hotkey = "Ctrl + F12"
+    with open("hotkey.txt", "w") as file:
+        file.write(current_hotkey)
 hotkey_button = tk.Button(window, text=current_hotkey, command=open_hotkey_window)
 hotkey_button.pack()
 
