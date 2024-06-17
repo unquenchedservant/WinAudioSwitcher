@@ -174,7 +174,7 @@ def remove_item():
 # Create the main window
 window = tk.Tk()
 window.title("WinAudioSwitcher")
-window.geometry("400x300")
+window.geometry("1000x400")
 
 devices = get_audio_devices()
 # Create the list view for the first list
@@ -209,6 +209,7 @@ for item in list_view_2.get(0, tk.END):
             deletion_count += 1
             list_view_1.delete(list_view_1_items.index(item_1))
 
+window.update_idletasks()
 # Create the label for the current hotkey
 hotkey_label_main = tk.Label(window, text="Current Hotkey: ")
 hotkey_label_main.pack()
