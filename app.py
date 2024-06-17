@@ -3,7 +3,9 @@ from tkinter import *
 from pycaw.pycaw import AudioUtilities
 import os 
 
-#TODO: Update .txt to .json
+#TODO: Update .txt to .json (May not be necessary)
+#TODO: Add a service to run a new script in the background using this information. 
+#TODO: Figure out how to make the script run in the background and with an icon in the system tray.
 
 hotkey_win = None
 ctrl_pressed = False
