@@ -14,7 +14,7 @@ super_pressed = False
 num_modifiers = 0
 num_keys = 0
 hotkey_text = ""
-
+hotkey_label = None
 def key_pressed(event):
     global ctrl_pressed
     global alt_pressed
@@ -116,6 +116,7 @@ def open_hotkey_window():
 
 def create_hotkey_window():
     global hotkey_win
+    global hotkey_label
     hotkey_win = tk.Toplevel(window)
     hotkey_win.title("Set Hotkey")
     hotkey_win.geometry("200x100")
@@ -139,7 +140,10 @@ def add_item():
         list_view_2.insert(tk.END, nSelected) # insert the selected item into the second list
         list_view_1.delete(selected)
         with open("current_devices.txt", "a") as file:
-            file.write(nSelected + "\n")
+            if (os.path.getsize("current_devices.txt") > 0):
+                file.write(f'\n{nSelected}')
+            else:
+                file.write(f'{nSelected}')
 
 def remove_item():
     selected = list_view_2.curselection()
@@ -157,7 +161,6 @@ window.title("WinAudioSwitcher")
 window.geometry("400x300")
 
 devices = get_audio_devices()
-print(devices)
 # Create the list view for the first list
 list_view_1 = tk.Listbox(window)
 for device in devices:
@@ -174,7 +177,6 @@ list_2_devices = []
 if not os.path.exists("current_devices.txt"):
     pass
 else:
-    print("File exists")
     with open("current_devices.txt", "r") as file:
         for line in file.readlines():
             list_2_devices.append(line)
@@ -184,19 +186,16 @@ for device in list_2_devices:
 list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 list_view_1_items = list(list_view_1.get(0, tk.END))
 
-print(list_2_devices)
 deletion_count = 0
 for item in list_view_2.get(0, tk.END):
-    print("Item: " + item)
     for item_1 in list_view_1.get(0, tk.END):
         if item.strip() == item_1.strip():
             deletion_count += 1
             list_view_1.delete(list_view_1_items.index(item_1))
-print("Deletion count: " + str(deletion_count))
 
 # Create the label for the current hotkey
-hotkey_label = tk.Label(window, text="Current Hotkey: ")
-hotkey_label.pack()
+hotkey_label_main = tk.Label(window, text="Current Hotkey: ")
+hotkey_label_main.pack()
 
 # Create the button to show the current hotkey
 # Variable name current_hotkey will get the currenthotkey from a file called hotkey.txt in the current directory
