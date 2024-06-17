@@ -201,7 +201,7 @@ hotkey_win.bind("<Key>", key_pressed)
 hotkey_win.bind("<KeyRelease>", key_released)
 
 current_pressed = "Ctrl + F12"
-hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_pressed)
+hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_hotkey)
 hotkey_label.pack()
 window.update_idletasks()
 x = (hotkey_win.winfo_screenwidth() - hotkey_win.winfo_reqwidth()) / 2
