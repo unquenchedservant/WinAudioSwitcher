@@ -3,6 +3,9 @@ from tkinter import *
 from pycaw.pycaw import AudioUtilities
 import os 
 
+#TODO: Add tooltips for shortcut window
+#TODO: Make it so hotkey_win can be recreated. 
+
 ctrl_pressed = False
 alt_pressed = False
 shift_pressed = False
