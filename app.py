@@ -3,10 +3,78 @@ from tkinter import *
 from pycaw.pycaw import AudioUtilities
 import os 
 
+ctrl_pressed = False
+alt_pressed = False
+shift_pressed = False
+super_pressed = False
+hotkey_text = ""
+
+#TODO: Add a way to save the hotkey to a file (low priority)
+#TODO: Make it so that it maxes at 3 keys (2 modifiers and 1 key)
+#TODO: Change it so that 'esc' clears the current hotkey, and 'enter' saves the hotkey
 def key_pressed(event):
+    global ctrl_pressed
+    global alt_pressed
+    global shift_pressed
+    global super_pressed
+    global hotkey_text
+    if event.keysym == "Control_L":
+        ctrl_pressed = True
+        if not "Ctrl" in hotkey_text:
+            if hotkey_text != "":
+                hotkey_text = hotkey_text + " + " + "Ctrl"
+            else:
+                hotkey_text = hotkey_text + "Ctrl"
+        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+    elif event.keysym == "Alt_L":
+        alt_pressed = True
+        if not "Alt" in hotkey_text:
+            if hotkey_text != "":
+                hotkey_text = hotkey_text + " + " + "Alt"
+            else:
+                hotkey_text = hotkey_text + "Alt"
+            hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+    elif event.keysym == "Shift_L":
+        shift_pressed = True
+        if not "Shift" in hotkey_text:
+            if hotkey_text != "":
+                hotkey_text = hotkey_text + " + " + "Shift"
+            else:
+                hotkey_text = hotkey_text + "Shift"
+        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+    elif event.keysym == "Win_L":
+        super_pressed = True
+        if not "Super" in hotkey_text:
+            if hotkey_text != "":
+                hotkey_text = hotkey_text + " + " + "Super"
+            else:
+                hotkey_text = hotkey_text + "Super"
+        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+    else:
+        if not event.keysym in hotkey_text:
+            if hotkey_text != "":
+                hotkey_text = hotkey_text + " + " + event.keysym
+            else:
+                hotkey_text = hotkey_text + event.keysym
+        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+
 def key_released(event):
+    global ctrl_pressed
+    global alt_pressed
+    global shift_pressed
+    global super_pressed
+    global hotkey_text
+    if event.keysym == "Escape":
+        hotkey_text = ""
+        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+        alt_pressed = False
+        ctrl_pressed = False
+        shift_pressed = False
+        super_pressed = False
+
 def get_audio_devices():
     devices = AudioUtilities.GetAllDevices()
+
     return devices
 
 def open_hotkey_window():
@@ -40,6 +108,7 @@ window.title("WinAudioSwitcher")
 window.geometry("400x300")
 
 devices = get_audio_devices()
+print(devices)
 # Create the list view for the first list
 list_view_1 = tk.Listbox(window)
 for device in devices:
