@@ -60,6 +60,7 @@ def key_pressed(event):
             with open("hotkey.txt", "w") as file:
                 file.write(hotkey_text)
             hotkey_win.withdraw()
+            hotkey_button.config(text=hotkey_text)
         elif event.keysym == "BackSpace":
             if num_keys + num_modifiers == 1:
                 hotkey_text = ""
