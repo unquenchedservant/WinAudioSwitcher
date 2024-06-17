@@ -90,7 +90,7 @@ def key_released(event):
     global num_keys
     if event.keysym == "Escape" or event.keysym == "Delete":
         hotkey_text = ""
-        hotkey_label.config(text="Current Hotkey: " + hotkey_text)
+        hotkey_label.config(text="Current Hotkey: " + current_hotkey)
         alt_pressed = False
         ctrl_pressed = False
         shift_pressed = False
