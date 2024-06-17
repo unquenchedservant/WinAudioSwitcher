@@ -4,8 +4,8 @@ from pycaw.pycaw import AudioUtilities
 import os 
 
 #TODO: Add tooltips for shortcut window
-#TODO: Make it so hotkey_win can be recreated. 
 
+hotkey_win = None
 ctrl_pressed = False
 alt_pressed = False
 shift_pressed = False
@@ -107,10 +107,29 @@ def get_audio_devices():
     return devices
 
 def open_hotkey_window():
-    if hotkey_win.state() == "withdrawn":
+    global hotkey_win
+    try:
         hotkey_win.deiconify()
-    else:
-        hotkey_win.withdraw()
+    except tk.TclError:
+        hotkey_win = create_hotkey_window() 
+
+def create_hotkey_window():
+    global hotkey_win
+    hotkey_win = tk.Toplevel(window)
+    hotkey_win.title("Set Hotkey")
+    hotkey_win.geometry("200x100")
+    hotkey_win.bind("<Key>", key_pressed)
+    hotkey_win.bind("<KeyRelease>", key_released)
+
+    hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_hotkey)
+    hotkey_label.pack()
+
+    window.update_idletasks()
+    x = (hotkey_win.winfo_screenwidth() - hotkey_win.winfo_reqwidth()) / 2
+    y = (hotkey_win.winfo_screenheight() - hotkey_win.winfo_reqheight()) / 2
+    hotkey_win.geometry("+%d+%d" % (x, y))
+
+    return hotkey_win
 
 def add_item():
     selected = list_view_1.curselection()
@@ -197,20 +216,7 @@ add_button.pack()
 
 remove_button = tk.Button(window, text="Remove Item", command=remove_item)
 remove_button.pack()
-hotkey_win = Toplevel(window)
-hotkey_win.title("Set Hotkey")
-hotkey_win.geometry("200x100")
-hotkey_win.bind("<Key>", key_pressed)
-hotkey_win.bind("<KeyRelease>", key_released)
-
-current_pressed = "Ctrl + F12"
-hotkey_label = tk.Label(hotkey_win, text="Current Hotkey: " + current_hotkey)
-hotkey_label.pack()
-window.update_idletasks()
-x = (hotkey_win.winfo_screenwidth() - hotkey_win.winfo_reqwidth()) / 2
-y = (hotkey_win.winfo_screenheight() - hotkey_win.winfo_reqheight()) / 2
-hotkey_win.geometry("+%d+%d" % (x, y))
-
+hotkey_win = create_hotkey_window()
 hotkey_win.withdraw()
 # Start the main loop
 window.mainloop()
