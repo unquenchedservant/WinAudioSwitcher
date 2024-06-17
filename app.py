@@ -19,34 +19,38 @@ def key_pressed(event):
     global shift_pressed
     global super_pressed
     global hotkey_text
+    global num_modifiers
     if event.keysym == "Control_L":
-        num_modifiers += 1
-        ctrl_pressed = True
-        if not "Ctrl" in hotkey_text:
+        if not "Ctrl" in hotkey_text and not num_modifiers == 2:
+            ctrl_pressed = True
+            num_modifiers += 1
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + "Ctrl"
             else:
                 hotkey_text = hotkey_text + "Ctrl"
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
     elif event.keysym == "Alt_L":
-        alt_pressed = True
-        if not "Alt" in hotkey_text:
+        if not "Alt" in hotkey_text and not num_modifiers == 2:
+            num_modifiers += 1
+            alt_pressed = True
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + "Alt"
             else:
                 hotkey_text = hotkey_text + "Alt"
             hotkey_label.config(text="Current Hotkey: " + hotkey_text)
     elif event.keysym == "Shift_L":
-        shift_pressed = True
-        if not "Shift" in hotkey_text:
+        if not "Shift" in hotkey_text and not num_modifiers == 2:
+            shift_pressed = True
+            num_modifiers += 1
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + "Shift"
             else:
                 hotkey_text = hotkey_text + "Shift"
         hotkey_label.config(text="Current Hotkey: " + hotkey_text)
     elif event.keysym == "Win_L":
-        super_pressed = True
-        if not "Super" in hotkey_text:
+        if not "Super" in hotkey_text and not num_modifiers == 2:
+            super_pressed = True
+            num_modifiers += 1
             if hotkey_text != "":
                 hotkey_text = hotkey_text + " + " + "Super"
             else:
