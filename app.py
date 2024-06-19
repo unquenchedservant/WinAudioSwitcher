@@ -273,13 +273,16 @@ def create_preferences_window():
 def after_click(icon, query):
     if str(query) == "Preferences":
         create_preferences_window()
+    elif str(query) == "About":
+        os.system("start https://github.com/unquenchedservant/WinAudioSwitcher")
     elif str(query) == "Exit":
         icon.stop()
         sys.exit()
 
 icon = pystray.Icon("WinAudioSwitcher", image, "WinAudioSwitcher",
                     menu=pystray.Menu(
-                        pystray.MenuItem("Preferences", create_preferences_window),
+                        pystray.MenuItem("Preferences", after_click),
+                        pystray.MenuItem("About", after_click),
                         pystray.MenuItem("Exit", after_click)
                     )
                     )
