@@ -5,9 +5,14 @@ import os
 import pystray
 from PIL import Image
 import sys
+import darkdetect
 #TODO: Update .txt to .json (May not be necessary)
 #TODO: Add a service to run a new script in the background using this information. 
-
+image = None
+if darkdetect.isDark():
+    image = Image.open("icon_dark.png")
+else:
+    image = Image.open("icon.png")
 hotkey_win = None
 ctrl_pressed = False
 alt_pressed = False
@@ -264,7 +269,6 @@ def create_preferences_window():
     # Start the main loop
     window.mainloop()
 
-image = Image.open("icon.png")
 
 def after_click(icon, query):
     if str(query) == "Preferences":
