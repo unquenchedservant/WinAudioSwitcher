@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import *
 from pycaw.pycaw import AudioUtilities
-import os 
-
+import os
+import pystray
+from PIL import Image
+import sys
 #TODO: Update .txt to .json (May not be necessary)
 #TODO: Add a service to run a new script in the background using this information. 
 #TODO: Figure out how to make the script run in the background and with an icon in the system tray.
@@ -12,13 +14,20 @@ ctrl_pressed = False
 alt_pressed = False
 shift_pressed = False
 super_pressed = False
+current_hotkey = ""
 num_modifiers = 0
 num_keys = 0
 hotkey_text = ""
 hotkey_label = None
+window = None
+hotkey_button = None
+list_view_1 = None
+list_view_2 = None
 def key_pressed(event):
     global ctrl_pressed
     global alt_pressed
+    global hotkey_button
+    global hotkey_label
     global shift_pressed
     global super_pressed
     global hotkey_text
@@ -93,6 +102,8 @@ def key_released(event):
     global hotkey_text
     global num_modifiers
     global num_keys
+    global current_hotkey
+    global hotkey_label
     if event.keysym == "Escape" or event.keysym == "Delete":
         hotkey_text = ""
         hotkey_label.config(text="Current Hotkey: " + current_hotkey)
@@ -116,8 +127,11 @@ def open_hotkey_window():
         hotkey_win = create_hotkey_window() 
 
 def create_hotkey_window():
+    global list_view_1
+    global window
     global hotkey_win
     global hotkey_label
+    global current_hotkey
     hotkey_win = tk.Toplevel(window)
     hotkey_win.title("Set Hotkey")
     hotkey_win.geometry("225x100")
@@ -145,6 +159,8 @@ def create_hotkey_window():
     return hotkey_win
 
 def add_item():
+    global list_view_1
+    global list_view_2
     selected = list_view_1.curselection()
     if selected:
         nSelected = list_view_1.get(selected)
@@ -157,6 +173,8 @@ def add_item():
                 file.write(f'{nSelected}')
 
 def remove_item():
+    global list_view_1
+    global list_view_2
     total_lines = 0
     current_position = 0
     with open("current_devices.txt", "r") as file:
@@ -172,70 +190,94 @@ def remove_item():
                     file.write(f'{device}\n')
                 else:
                     file.write(f'{device}')
+def create_preferences_window():
+    # Create the main window
+    global window
+    global list_view_1
+    global list_view_2
+    global hotkey_button
+    global hotkey_win
+    global hotkey_label
+    global current_hotkey
+    window = tk.Tk()
+    window.title("WinAudioSwitcher")
+    window.geometry("1000x400")
 
-# Create the main window
-window = tk.Tk()
-window.title("WinAudioSwitcher")
-window.geometry("1000x400")
+    devices = get_audio_devices()
+    # Create the list view for the first list
+    list_view_1 = tk.Listbox(window)
+    for device in devices:
+        if device.FriendlyName not in list_view_1.get(0, tk.END):
+            list_view_1.insert(tk.END, device.FriendlyName)
+    list_view_1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-devices = get_audio_devices()
-# Create the list view for the first list
-list_view_1 = tk.Listbox(window)
-for device in devices:
-    if device.FriendlyName not in list_view_1.get(0, tk.END):
-        list_view_1.insert(tk.END, device.FriendlyName)
-list_view_1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    # Create the list view for the second list
+    list_view_2 = tk.Listbox(window)
+    list_2_devices = []
+    # I want to read from a file named "current_devices.txt"
+    # If the file does not exist, create it
+    # If the file does exist, read the devices from the file and add them to the list
+    if not os.path.exists("current_devices.txt"):
+        pass
+    else:
+        with open("current_devices.txt", "r") as file:
+            for line in file.readlines():
+                list_2_devices.append(line)
 
-# Create the list view for the second list
-list_view_2 = tk.Listbox(window)
-list_2_devices = []
-# I want to read from a file named "current_devices.txt"
-# If the file does not exist, create it
-# If the file does exist, read the devices from the file and add them to the list
-if not os.path.exists("current_devices.txt"):
-    pass
-else:
-    with open("current_devices.txt", "r") as file:
-        for line in file.readlines():
-            list_2_devices.append(line)
+    for device in list_2_devices:
+        list_view_2.insert(tk.END, device)
+    list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    list_view_1_items = list(list_view_1.get(0, tk.END))
 
-for device in list_2_devices:
-    list_view_2.insert(tk.END, device)
-list_view_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-list_view_1_items = list(list_view_1.get(0, tk.END))
+    deletion_count = 0
+    for item in list_view_2.get(0, tk.END):
+        for item_1 in list_view_1.get(0, tk.END):
+            if item.strip() == item_1.strip():
+                deletion_count += 1
+                list_view_1.delete(list_view_1_items.index(item_1))
 
-deletion_count = 0
-for item in list_view_2.get(0, tk.END):
-    for item_1 in list_view_1.get(0, tk.END):
-        if item.strip() == item_1.strip():
-            deletion_count += 1
-            list_view_1.delete(list_view_1_items.index(item_1))
+    window.update_idletasks()
+    # Create the label for the current hotkey
+    hotkey_label_main = tk.Label(window, text="Current Hotkey: ")
+    hotkey_label_main.pack()
 
-window.update_idletasks()
-# Create the label for the current hotkey
-hotkey_label_main = tk.Label(window, text="Current Hotkey: ")
-hotkey_label_main.pack()
+    # Create the button to show the current hotkey
+    # Variable name current_hotkey will get the currenthotkey from a file called hotkey.txt in the current directory
+    try:
+        with open("hotkey.txt", "r") as file:
+            current_hotkey = file.read()
+    except FileNotFoundError:
+        current_hotkey = "Ctrl + F12"
+        with open("hotkey.txt", "w") as file:
+            file.write(current_hotkey)
+    hotkey_button = tk.Button(window, text=current_hotkey, command=open_hotkey_window)
+    hotkey_button.pack()
 
-# Create the button to show the current hotkey
-# Variable name current_hotkey will get the currenthotkey from a file called hotkey.txt in the current directory
-try:
-    with open("hotkey.txt", "r") as file:
-        current_hotkey = file.read()
-except FileNotFoundError:
-    current_hotkey = "Ctrl + F12"
-    with open("hotkey.txt", "w") as file:
-        file.write(current_hotkey)
-hotkey_button = tk.Button(window, text=current_hotkey, command=open_hotkey_window)
-hotkey_button.pack()
-
-# Create the button to add an item from the first list to the second list
-add_button = tk.Button(window, text="Add Item", command=add_item)
-add_button.pack()
+    # Create the button to add an item from the first list to the second list
+    add_button = tk.Button(window, text="Add Item", command=add_item)
+    add_button.pack()
 
 
-remove_button = tk.Button(window, text="Remove Item", command=remove_item)
-remove_button.pack()
-hotkey_win = create_hotkey_window()
-hotkey_win.withdraw()
-# Start the main loop
-window.mainloop()
+    remove_button = tk.Button(window, text="Remove Item", command=remove_item)
+    remove_button.pack()
+    hotkey_win = create_hotkey_window()
+    hotkey_win.withdraw()
+    # Start the main loop
+    window.mainloop()
+
+image = Image.open("icon.png")
+
+def after_click(icon, query):
+    if str(query) == "Preferences":
+        create_preferences_window()
+    elif str(query) == "Exit":
+        icon.stop()
+        sys.exit()
+
+icon = pystray.Icon("WinAudioSwitcher", image, "WinAudioSwitcher",
+                    menu=pystray.Menu(
+                        pystray.MenuItem("Preferences", create_preferences_window),
+                        pystray.MenuItem("Exit", after_click)
+                    )
+                    )
+icon.run()
