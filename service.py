@@ -5,6 +5,13 @@ import win32event
 import win32service
 import win32serviceutil
 
+from __future__ import print_function
+import comtypes
+from pycaw.pycaw import AudioUtilities, IMMDeviceEnumerator, EDataFlow, DEVICE_STATE
+from pycaw.constants import CLSID_MMDeviceEnumerator
+
+
+
 class AudioSwitcherService(win32serviceutil.ServiceFramework):
     _svc_name_ = "WinAudioSwitcher"
     _svc_display_name_ = "WinAudioSwitcher Service"
@@ -31,6 +38,19 @@ class AudioSwitcherService(win32serviceutil.ServiceFramework):
         while self.is_alive:
             # TODO: Add logic for listening for the hotkey and then switching the audio output device
             pass
+
+    def get_default_audio_output_device():
+    # Create a new IMMDeviceEnumerator instance
+        deviceEnumerator = comtypes.CoCreateInstance(
+            CLSID_MMDeviceEnumerator,
+            IMMDeviceEnumerator,
+            comtypes.CLSCTX_INPROC_SERVER)
+        
+        # Get the default audio output endpoint
+        default_device = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender.value, DEVICE_STATE.ACTIVE.value)
+        return AudioUtilities.CreateDevice(default_device)
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
