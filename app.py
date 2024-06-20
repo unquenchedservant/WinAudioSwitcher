@@ -226,7 +226,8 @@ def create_preferences_window():
     else:
         with open("current_devices.txt", "r") as file:
             for line in file.readlines():
-                list_2_devices.append(line)
+                if line != "\n":
+                    list_2_devices.append(line)
 
     for device in list_2_devices:
         list_view_2.insert(tk.END, device)
